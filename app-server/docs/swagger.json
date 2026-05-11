@@ -1,0 +1,1005 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Это сервер для книги рецептов (лабораторная работа).",
+        "title": "Recipe Book API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/dishes": {
+            "get": {
+                "description": "Возвращает блюда с фильтрацией по категории, флагам и имени.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dishes"
+                ],
+                "summary": "Получить список блюд",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Категория блюда",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Флаги блюда",
+                        "name": "flags",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Подстрока для поиска по имени",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.dishesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создает новое блюдо с составом продуктов.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dishes"
+                ],
+                "summary": "Создать блюдо",
+                "parameters": [
+                    {
+                        "description": "Данные блюда",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.createDishRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.dishResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dishes/{id}": {
+            "put": {
+                "description": "Частично обновляет данные блюда по UUID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dishes"
+                ],
+                "summary": "Обновить блюдо",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID блюда",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Поля для обновления",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.updateDishRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.messageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Удаляет блюдо по UUID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dishes"
+                ],
+                "summary": "Удалить блюдо",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID блюда",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.messageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dishes/{id}/products": {
+            "get": {
+                "description": "Получить продукты, которые используются для приготовления блюда с UUID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dishes"
+                ],
+                "summary": "Получить продукты входящие в состав блюда.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID блюда",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.messageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products": {
+            "get": {
+                "description": "Возвращает продукты с фильтрацией по подстроке и сортировкой по макронутриентам.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Получить список продуктов",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Сортировать по имени (не используется в usecase)",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Сортировать по калориям (desc)",
+                        "name": "calories",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Сортировать по белкам (desc)",
+                        "name": "proteins",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Сортировать по жирам (desc)",
+                        "name": "fats",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Сортировать по углеводам (desc)",
+                        "name": "carbs",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Подстрока для поиска по имени",
+                        "name": "find",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.productsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создает новый продукт по данным из JSON.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Создать продукт",
+                "parameters": [
+                    {
+                        "description": "Данные продукта",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.createProductRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.messageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "description": "Возвращает один продукт по UUID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Получить продукт по ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID продукта",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.productResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Частично обновляет данные существующего продукта.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Обновить продукт",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID продукта",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Поля для обновления",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.UpdateProductInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.messageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Удаляет продукт по UUID, если он не используется в блюдах.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Удалить продукт",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID продукта",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.messageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "domain.Dish": {
+            "type": "object",
+            "properties": {
+                "calories": {
+                    "type": "number"
+                },
+                "carbs": {
+                    "type": "number"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.DishCategory"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fats": {
+                    "type": "number"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "proteins": {
+                    "type": "number"
+                },
+                "serving_size": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.DishCategory": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+            ],
+            "x-enum-varnames": [
+                "DishCategoryDessert",
+                "DishCategoryMainCourse",
+                "DishCategoryAppetizer",
+                "DishCategorySalad",
+                "DishCategorySoup",
+                "DishCategoryDrink",
+                "DishCategoryStarter",
+                "DishCategoryUnknown"
+            ]
+        },
+        "domain.Product": {
+            "type": "object",
+            "properties": {
+                "calories": {
+                    "type": "number"
+                },
+                "carbs": {
+                    "type": "number"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.ProductCategory"
+                },
+                "composition": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fats": {
+                    "type": "number"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "proteins": {
+                    "type": "number"
+                },
+                "readiness_for_consumption": {
+                    "$ref": "#/definitions/domain.ReadinessForConsuption"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.ProductCategory": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+            ],
+            "x-enum-varnames": [
+                "ProductCategoryFreezed",
+                "ProductCategoryVegetables",
+                "ProductCategoryMeat",
+                "ProductCategorySpices",
+                "ProductCategoryPreserves",
+                "ProductCategoryCereals",
+                "ProductCategorySweets",
+                "ProductCategoryLiquids"
+            ]
+        },
+        "domain.ReadinessForConsuption": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "ReadinessReadyToEat",
+                "ReadinessSemiFinished",
+                "ReadinessRequiresCooking"
+            ]
+        },
+        "usecase.DishProductDTO": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "product_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.UpdateProductInput": {
+            "type": "object",
+            "properties": {
+                "calories": {
+                    "type": "number"
+                },
+                "carbs": {
+                    "type": "number"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.ProductCategory"
+                },
+                "composition": {
+                    "type": "string"
+                },
+                "fats": {
+                    "type": "number"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 2
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "proteins": {
+                    "type": "number"
+                },
+                "readiness_for_consuption": {
+                    "$ref": "#/definitions/domain.ReadinessForConsuption"
+                }
+            }
+        },
+        "v1.apiError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.createDishRequest": {
+            "type": "object",
+            "required": [
+                "calories",
+                "carbs",
+                "category",
+                "fats",
+                "name",
+                "products",
+                "proteins",
+                "serving_size"
+            ],
+            "properties": {
+                "calories": {
+                    "type": "number"
+                },
+                "carbs": {
+                    "type": "number"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.DishCategory"
+                },
+                "fats": {
+                    "type": "number"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/usecase.DishProductDTO"
+                    }
+                },
+                "proteins": {
+                    "type": "number"
+                },
+                "serving_size": {
+                    "type": "number"
+                }
+            }
+        },
+        "v1.createProductRequest": {
+            "type": "object",
+            "properties": {
+                "calories": {
+                    "type": "number"
+                },
+                "carbs": {
+                    "type": "number"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.ProductCategory"
+                },
+                "composition": {
+                    "type": "string"
+                },
+                "fats": {
+                    "type": "number"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 2
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "proteins": {
+                    "type": "number"
+                },
+                "readiness_for_consuption": {
+                    "$ref": "#/definitions/domain.ReadinessForConsuption"
+                }
+            }
+        },
+        "v1.dishData": {
+            "type": "object",
+            "properties": {
+                "dish": {
+                    "$ref": "#/definitions/domain.Dish"
+                }
+            }
+        },
+        "v1.dishResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/v1.dishData"
+                },
+                "error": {
+                    "$ref": "#/definitions/v1.apiError"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "v1.dishesData": {
+            "type": "object",
+            "properties": {
+                "dishes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Dish"
+                    }
+                }
+            }
+        },
+        "v1.dishesResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/v1.dishesData"
+                },
+                "error": {
+                    "$ref": "#/definitions/v1.apiError"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "v1.errorResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "$ref": "#/definitions/v1.apiError"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "v1.messageData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.messageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/v1.messageData"
+                },
+                "error": {
+                    "$ref": "#/definitions/v1.apiError"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "v1.productData": {
+            "type": "object",
+            "properties": {
+                "product": {
+                    "$ref": "#/definitions/domain.Product"
+                }
+            }
+        },
+        "v1.productResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/v1.productData"
+                },
+                "error": {
+                    "$ref": "#/definitions/v1.apiError"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "v1.productsData": {
+            "type": "object",
+            "properties": {
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Product"
+                    }
+                }
+            }
+        },
+        "v1.productsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/v1.productsData"
+                },
+                "error": {
+                    "$ref": "#/definitions/v1.apiError"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "v1.updateDishRequest": {
+            "type": "object",
+            "properties": {
+                "calories": {
+                    "type": "number"
+                },
+                "carbs": {
+                    "type": "number"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.DishCategory"
+                },
+                "fats": {
+                    "type": "number"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/usecase.DishProductDTO"
+                    }
+                },
+                "proteins": {
+                    "type": "number"
+                },
+                "serving_size": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

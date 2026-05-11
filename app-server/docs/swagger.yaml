@@ -1,0 +1,677 @@
+basePath: /api/v1
+definitions:
+  domain.Dish:
+    properties:
+      calories:
+        type: number
+      carbs:
+        type: number
+      category:
+        $ref: '#/definitions/domain.DishCategory'
+      created_at:
+        type: string
+      fats:
+        type: number
+      flags:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      proteins:
+        type: number
+      serving_size:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  domain.DishCategory:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    type: integer
+    x-enum-varnames:
+    - DishCategoryDessert
+    - DishCategoryMainCourse
+    - DishCategoryAppetizer
+    - DishCategorySalad
+    - DishCategorySoup
+    - DishCategoryDrink
+    - DishCategoryStarter
+    - DishCategoryUnknown
+  domain.Product:
+    properties:
+      calories:
+        type: number
+      carbs:
+        type: number
+      category:
+        $ref: '#/definitions/domain.ProductCategory'
+      composition:
+        type: string
+      created_at:
+        type: string
+      fats:
+        type: number
+      flags:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      proteins:
+        type: number
+      readiness_for_consumption:
+        $ref: '#/definitions/domain.ReadinessForConsuption'
+      updated_at:
+        type: string
+    type: object
+  domain.ProductCategory:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    type: integer
+    x-enum-varnames:
+    - ProductCategoryFreezed
+    - ProductCategoryVegetables
+    - ProductCategoryMeat
+    - ProductCategorySpices
+    - ProductCategoryPreserves
+    - ProductCategoryCereals
+    - ProductCategorySweets
+    - ProductCategoryLiquids
+  domain.ReadinessForConsuption:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - ReadinessReadyToEat
+    - ReadinessSemiFinished
+    - ReadinessRequiresCooking
+  usecase.DishProductDTO:
+    properties:
+      amount:
+        type: number
+      product_id:
+        type: string
+    type: object
+  v1.UpdateProductInput:
+    properties:
+      calories:
+        type: number
+      carbs:
+        type: number
+      category:
+        $ref: '#/definitions/domain.ProductCategory'
+      composition:
+        type: string
+      fats:
+        type: number
+      flags:
+        items:
+          type: string
+        type: array
+      name:
+        minLength: 2
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      proteins:
+        type: number
+      readiness_for_consuption:
+        $ref: '#/definitions/domain.ReadinessForConsuption'
+    type: object
+  v1.apiError:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
+  v1.createDishRequest:
+    properties:
+      calories:
+        type: number
+      carbs:
+        type: number
+      category:
+        $ref: '#/definitions/domain.DishCategory'
+      fats:
+        type: number
+      flags:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      products:
+        items:
+          $ref: '#/definitions/usecase.DishProductDTO'
+        type: array
+      proteins:
+        type: number
+      serving_size:
+        type: number
+    required:
+    - calories
+    - carbs
+    - category
+    - fats
+    - name
+    - products
+    - proteins
+    - serving_size
+    type: object
+  v1.createProductRequest:
+    properties:
+      calories:
+        type: number
+      carbs:
+        type: number
+      category:
+        $ref: '#/definitions/domain.ProductCategory'
+      composition:
+        type: string
+      fats:
+        type: number
+      flags:
+        items:
+          type: string
+        type: array
+      name:
+        minLength: 2
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      proteins:
+        type: number
+      readiness_for_consuption:
+        $ref: '#/definitions/domain.ReadinessForConsuption'
+    type: object
+  v1.dishData:
+    properties:
+      dish:
+        $ref: '#/definitions/domain.Dish'
+    type: object
+  v1.dishResponse:
+    properties:
+      data:
+        $ref: '#/definitions/v1.dishData'
+      error:
+        $ref: '#/definitions/v1.apiError'
+      success:
+        type: boolean
+    type: object
+  v1.dishesData:
+    properties:
+      dishes:
+        items:
+          $ref: '#/definitions/domain.Dish'
+        type: array
+    type: object
+  v1.dishesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/v1.dishesData'
+      error:
+        $ref: '#/definitions/v1.apiError'
+      success:
+        type: boolean
+    type: object
+  v1.errorResponse:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/v1.apiError'
+      success:
+        type: boolean
+    type: object
+  v1.messageData:
+    properties:
+      message:
+        type: string
+    type: object
+  v1.messageResponse:
+    properties:
+      data:
+        $ref: '#/definitions/v1.messageData'
+      error:
+        $ref: '#/definitions/v1.apiError'
+      success:
+        type: boolean
+    type: object
+  v1.productData:
+    properties:
+      product:
+        $ref: '#/definitions/domain.Product'
+    type: object
+  v1.productResponse:
+    properties:
+      data:
+        $ref: '#/definitions/v1.productData'
+      error:
+        $ref: '#/definitions/v1.apiError'
+      success:
+        type: boolean
+    type: object
+  v1.productsData:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/domain.Product'
+        type: array
+    type: object
+  v1.productsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/v1.productsData'
+      error:
+        $ref: '#/definitions/v1.apiError'
+      success:
+        type: boolean
+    type: object
+  v1.updateDishRequest:
+    properties:
+      calories:
+        type: number
+      carbs:
+        type: number
+      category:
+        $ref: '#/definitions/domain.DishCategory'
+      fats:
+        type: number
+      flags:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      photos:
+        items:
+          type: string
+        type: array
+      products:
+        items:
+          $ref: '#/definitions/usecase.DishProductDTO'
+        type: array
+      proteins:
+        type: number
+      serving_size:
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Это сервер для книги рецептов (лабораторная работа).
+  title: Recipe Book API
+  version: "1.0"
+paths:
+  /dishes:
+    get:
+      description: Возвращает блюда с фильтрацией по категории, флагам и имени.
+      parameters:
+      - description: Категория блюда
+        in: query
+        name: category
+        type: string
+      - collectionFormat: csv
+        description: Флаги блюда
+        in: query
+        items:
+          type: string
+        name: flags
+        type: array
+      - description: Подстрока для поиска по имени
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.dishesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Получить список блюд
+      tags:
+      - dishes
+    post:
+      consumes:
+      - application/json
+      description: Создает новое блюдо с составом продуктов.
+      parameters:
+      - description: Данные блюда
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.createDishRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.dishResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Создать блюдо
+      tags:
+      - dishes
+  /dishes/{id}:
+    delete:
+      description: Удаляет блюдо по UUID.
+      parameters:
+      - description: UUID блюда
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Удалить блюдо
+      tags:
+      - dishes
+    put:
+      consumes:
+      - application/json
+      description: Частично обновляет данные блюда по UUID.
+      parameters:
+      - description: UUID блюда
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Поля для обновления
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.updateDishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Обновить блюдо
+      tags:
+      - dishes
+  /dishes/{id}/products:
+    get:
+      description: Получить продукты, которые используются для приготовления блюда
+        с UUID.
+      parameters:
+      - description: UUID блюда
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.messageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Получить продукты входящие в состав блюда.
+      tags:
+      - dishes
+  /products:
+    get:
+      description: Возвращает продукты с фильтрацией по подстроке и сортировкой по
+        макронутриентам.
+      parameters:
+      - description: Сортировать по имени (не используется в usecase)
+        in: query
+        name: name
+        type: boolean
+      - description: Сортировать по калориям (desc)
+        in: query
+        name: calories
+        type: boolean
+      - description: Сортировать по белкам (desc)
+        in: query
+        name: proteins
+        type: boolean
+      - description: Сортировать по жирам (desc)
+        in: query
+        name: fats
+        type: boolean
+      - description: Сортировать по углеводам (desc)
+        in: query
+        name: carbs
+        type: boolean
+      - description: Подстрока для поиска по имени
+        in: query
+        name: find
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.productsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Получить список продуктов
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Создает новый продукт по данным из JSON.
+      parameters:
+      - description: Данные продукта
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.createProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Создать продукт
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      description: Удаляет продукт по UUID, если он не используется в блюдах.
+      parameters:
+      - description: UUID продукта
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Удалить продукт
+      tags:
+      - products
+    get:
+      description: Возвращает один продукт по UUID.
+      parameters:
+      - description: UUID продукта
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.productResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Получить продукт по ID
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Частично обновляет данные существующего продукта.
+      parameters:
+      - description: UUID продукта
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Поля для обновления
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpdateProductInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.messageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errorResponse'
+      summary: Обновить продукт
+      tags:
+      - products
+swagger: "2.0"

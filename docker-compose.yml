@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=gopher
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=recipe_book
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gopher -d recipe_book"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-net
+
+  app:
+    build:
+      context: ./app-server
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=gopher
+      - DB_PASSWORD=pass
+      - DB_NAME=recipe_book
+      - APP_PORT=8080
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-net
+  client:
+    build:
+      context: ./app-client
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
+    networks:
+      - app-net
+    environment:
+      - REACT_APP_API_URL=/api/v1
+
+volumes:
+  pgdata:
+
+networks:
+  app-net:
+    driver: bridge
