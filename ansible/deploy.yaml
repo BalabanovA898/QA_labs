@@ -1,0 +1,74 @@
+---
+- name: Подготовка сервера, установка Docker и деплой кода
+  hosts: all
+  become: true
+
+  vars:
+      repo_url: "https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+      dest_dir: "/opt/my_awesome_project"
+      repo_branch: "main"
+
+  tasks:
+      - name: Обновляем кэш пакетов и ставим зависимости
+        ansible.builtin.apt:
+            name:
+                - apt-transport-https
+                - ca-certificates
+                - curl
+                - gnupg
+                - lsb-release
+                - git
+            state: present
+            update_cache: true
+
+      - name: Создаем директорию для ключей apt
+        ansible.builtin.file:
+            path: /etc/apt/keyrings
+            state: directory
+            mode: "0755"
+
+      - name: Скачиваем официальный GPG-ключ Docker
+        ansible.builtin.get_url:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            dest: /etc/apt/keyrings/docker.gpg
+            mode: "0644"
+
+      - name: Добавляем репозиторий Docker в apt
+        ansible.builtin.apt_repository:
+            repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_facts['distribution_release'] }} stable"
+            state: present
+
+      - name: Устанавливаем Docker и Docker Compose
+        ansible.builtin.apt:
+            name:
+                - docker-ce
+                - docker-ce-cli
+                - containerd.io
+                - docker-buildx-plugin
+                - docker-compose-plugin
+            state: present
+            update_cache: true
+
+      - name: Проверяем, что Docker запущен и стоит в автозагрузке
+        ansible.builtin.systemd:
+            name: docker
+            state: started
+            enabled: true
+
+      - name: Создаем папку под проект с правильными правами
+        ansible.builtin.file:
+            path: "{{ dest_dir }}"
+            state: directory
+            mode: "0755"
+
+      - name: Копируем docker-compose.yml из раннера на VPS
+        ansible.builtin.copy:
+            src: "../docker-compose.yml"
+            dest: "{{ dest_dir }}/docker-compose.yml"
+            mode: "0644"
+
+      - name: Стягиваем свежие образы из Docker Hub и перезапускаем контейнеры
+        ansible.builtin.docker_compose_v2:
+            project_src: "{{ dest_dir }}"
+            state: present
+            pull: always
