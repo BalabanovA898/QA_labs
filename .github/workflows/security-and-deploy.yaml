@@ -23,14 +23,25 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Scan Go & Node.js Dependencies
+            - name: Scan for HIGH vulnerabilities (Log only)
               uses: aquasecurity/trivy-action@master
               with:
                   scan-type: "fs"
                   scan-ref: "."
                   format: "table"
                   vuln-type: "library"
-                  severity: "CRITICAL,HIGH"
+                  severity: "HIGH"
+                  exit-code: "0"
+
+            - name: Scan for CRITICAL vulnerabilities (Break build)
+              uses: aquasecurity/trivy-action@master
+              with:
+                  scan-type: "fs"
+                  scan-ref: "."
+                  format: "table"
+                  vuln-type: "library"
+                  severity: "CRITICAL"
+                  exit-code: "1"
 
     build-backend:
         name: Build & Push Go Backend
