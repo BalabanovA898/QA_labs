@@ -17,5 +17,5 @@ COPY --from=builder /recipe-api .
 
 EXPOSE 8080
 
-USER www-data
+USER nobody
 CMD ["./recipe-api"]
