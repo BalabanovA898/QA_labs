@@ -31,18 +31,15 @@ jobs:
                   vuln-type: "library"
                   severity: "HIGH"
                   exit-code: "0"
-                  format: "template"
-                  template: "@/contrib/html.tpl"
-                  output: "trivy-report.html"
+                  format: "json"
+                  output: "trivy-report.json"
 
             - name: Scan for CRITICAL vulnerabilities (Break build)
               uses: aquasecurity/trivy-action@master
               with:
                   scan-type: "fs"
                   scan-ref: "."
-                  format: "template"
-                  template: "@/contrib/html.tpl"
-                  output: "trivy-report-critical.html"
+                  format: "table"
                   vuln-type: "library"
                   severity: "CRITICAL"
                   exit-code: "1"
@@ -52,15 +49,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: trivy-report
-                  path: trivy-report.html
-                  if-no-files-found: ignore
-
-            - name: Upload Trivy Report (CRITICAL) as Artifact
-              if: always()
-              uses: actions/upload-artifact@v4
-              with:
-                  name: trivy-report-critical
-                  path: trivy-report-critical.html
+                  path: trivy-report.json
                   if-no-files-found: ignore
 
     build-backend:
