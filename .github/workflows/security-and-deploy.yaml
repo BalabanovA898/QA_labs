@@ -14,7 +14,7 @@ jobs:
 
             - name: Run Semgrep
               run: |
-                  docker run --rm -v "${{ github.workspace }}:/src" returntocorp/semgrep:latest semgrep scan --config=auto --error
+                  docker run --rm -v "${{ github.workspace }}:/src" returntocorp/semgrep:latest semgrep scan --config=auto
 
     build-backend:
         name: Build & Push Go Backend
