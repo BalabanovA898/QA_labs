@@ -28,20 +28,40 @@ jobs:
               with:
                   scan-type: "fs"
                   scan-ref: "."
-                  format: "table"
                   vuln-type: "library"
                   severity: "HIGH"
                   exit-code: "0"
+                  format: "template"
+                  template: "@/contrib/html.tpl"
+                  output: "trivy-report.html"
 
             - name: Scan for CRITICAL vulnerabilities (Break build)
               uses: aquasecurity/trivy-action@master
               with:
                   scan-type: "fs"
                   scan-ref: "."
-                  format: "table"
+                  format: "template"
+                  template: "@/contrib/html.tpl"
+                  output: "trivy-report-critical.html"
                   vuln-type: "library"
                   severity: "CRITICAL"
                   exit-code: "1"
+
+            - name: Upload Trivy Report as Artifact
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: trivy-report
+                  path: trivy-report.html
+                  if-no-files-found: ignore
+
+            - name: Upload Trivy Report (CRITICAL) as Artifact
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: trivy-report-critical
+                  path: trivy-report-critical.html
+                  if-no-files-found: ignore
 
     build-backend:
         name: Build & Push Go Backend
@@ -114,15 +134,24 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+
             - name: Start Application for DAST
               run: |
                   docker compose up -d
                   sleep 15
+
             - name: ZAP Baseline Scan
               uses: zaproxy/action-baseline@v0.10.0
               with:
                   target: "http://localhost:3000"
               continue-on-error: true
+
+            - name: Upload ZAP Report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: zap-report
+                  path: zap_report.html
 
     deploy:
         name: Deploy to VPS via Ansible
