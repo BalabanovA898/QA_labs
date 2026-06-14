@@ -68,7 +68,8 @@
             mode: "0644"
 
       - name: Стягиваем свежие образы из Docker Hub и перезапускаем контейнеры
-        ansible.builtin.docker_compose_v2:
-            project_src: "{{ dest_dir }}"
-            state: present
-            pull: always
+        ansible.builtin.shell: |
+            docker compose pull
+            docker compose up -d
+        args:
+            chdir: "{{ dest_dir }}"
